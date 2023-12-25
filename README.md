@@ -27,16 +27,16 @@ This project implements a decentralized voting system using blockchain technolog
 
 1. Clone the repository:
 
-   ```bash
+```bash
 git clone https://github.com/phucthuan1st/THDTVoting
-   ```
+```
 
 2. Install dependencies:
 
-   ```bash
+```bash
    cd decentralized-voting-system/website
    npm install
-   ```
+```
 
 ### Usage
 
