@@ -6,7 +6,19 @@ import Web3 from 'web3';
 import './VotingApp.css';
 // Smart contract ABI
 const contractABI = [
-  // Bao hieu da duoc add
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_option",
+        "type": "uint256"
+      }
+    ],
+    "name": "addOption",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
   {
     "anonymous": false,
     "inputs": [
@@ -19,6 +31,19 @@ const contractABI = [
     ],
     "name": "OptionAdded",
     "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_option",
+        "type": "uint256"
+      }
+    ],
+    "name": "vote",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "anonymous": false,
@@ -38,19 +63,6 @@ const contractABI = [
     ],
     "name": "Voted",
     "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_option",
-        "type": "uint256"
-      }
-    ],
-    "name": "addOption",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   },
   {
     "inputs": [],
@@ -98,6 +110,19 @@ const contractABI = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "listOptions",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -158,19 +183,6 @@ const contractABI = [
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_option",
-        "type": "uint256"
-      }
-    ],
-    "name": "vote",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -213,7 +225,7 @@ const contractABI = [
 ];
 
 // Smart contract address
-const contractAddress = '0x13d1550952c64cE3326F0e05E13fB44d3D345964';
+const contractAddress = '0x703f5ee0a02898A8b871814E608a1A9bb22F8ef9';
 
 const VotingApp = () => {
   const [web3, setWeb3] = useState(null);

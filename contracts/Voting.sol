@@ -48,6 +48,12 @@ contract Voting {
         emit OptionAdded(_option);
     }
 
+     // Function to list all voting options
+    function listOptions() external view returns (uint256[] memory) {
+        return options;
+    }
+
+
     // Function to get the total number of voting options
     function getNumberOfOptions() external view returns (uint256) {
         return options.length;
