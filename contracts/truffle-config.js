@@ -91,7 +91,7 @@ module.exports = {
     // },
     //
     // Useful for private networks
-    private: {
+    ganache: {
       provider: () => new HDWalletProvider(MNEMONIC, `http://127.0.0.1:7545`),
       network_id: 1337,   // This network is yours, in the cloud.
       production: true    // Treats this network as if it was a public net. (default: false)
