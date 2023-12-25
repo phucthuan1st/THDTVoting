@@ -225,7 +225,7 @@ const contractABI = [
 ];
 
 // Smart contract address
-const contractAddress = '0x703f5ee0a02898A8b871814E608a1A9bb22F8ef9';
+const contractAddress = '0xAEAcC4C703bC1C4508a08D6Bbf1500395286e35f';
 
 const VotingApp = () => {
   const [web3, setWeb3] = useState(null);
