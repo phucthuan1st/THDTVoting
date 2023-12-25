@@ -15,6 +15,8 @@ This project implements a decentralized voting system using blockchain technolog
 - **contracts:** Contains Solidity smart contract files.
 - **website:** Houses the ReactJs frontend application.
 
+---
+
 ## Getting Started
 
 ### Prerequisites
@@ -60,6 +62,8 @@ git clone https://github.com/phucthuan1st/THDTVoting
 
 5. Access the application at `http://localhost:3000` in your web browser.
 
+---
+
 ## Contributors
 
 - Nguyen Phuc Thuan <phucthuan1st@gmail.com>
@@ -72,5 +76,3 @@ git clone https://github.com/phucthuan1st/THDTVoting
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
-
-Feel free to customize the README as per your project specifics. If you have any further questions or need assistance with specific code snippets, please let me know. Happy coding!
