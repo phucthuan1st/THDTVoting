@@ -261,6 +261,10 @@ const VotingApp = () => {
   const [hasVoted, setHasVoted] = useState(false);
   const [votedOption, setVotedOption] = useState(null);
   const [addOption, setAddOption] = useState("");
+  const [selectedRmOption, setSelectedRmOption] = useState(null);
+  const [voteCount, setVoteCount] = useState(null);
+
+
 
   useEffect(() => {
     // Initialize Web3
@@ -335,17 +339,45 @@ const VotingApp = () => {
     }
   };
 
-  const removeOption = async (optionToRemove) => {
+  // Function to remove the selected option
+  const handleRemoveOption = async () => {
     try {
-      const accounts = await web3.eth.getAccounts();
-      await contract.methods.removeOption(optionToRemove).send({ from: accounts[0], type: "0x0" });
-      console.log(`Option ${optionToRemove} removed successfully`);
+      // Ensure a valid contract instance and selected option
+      if (contract && selectedRmOption !== '') {
+        // Convert the selected option to a uint256 if needed
+        const optionToRemove = parseInt(selectedRmOption, 10);
+
+        // Call the removeOption function on your smart contract
+        await contract.methods.removeOption(optionToRemove).send({ from: accounts[0] });
+
+        console.log(`Option ${optionToRemove} removed successfully`);
+
+        // Update the options state to reflect the removed option
+        setOptions(prevOptions => prevOptions.filter(option => option !== selectedRmOption));
+      } else {
+        console.error('Invalid contract instance or selected option');
+      }
     } catch (error) {
       console.error('Error while removing option:', error);
     }
   };
 
-
+  // Hàm để trả về số lượng phiếu cho một lựa chọn cụ thể
+  const getVoteCount = async (_option) => {
+    try {
+      // Ensure a valid contract instance
+      if (contract) {
+        // Convert the selected option to a uint256 if needed
+        // Call the getVoteCount function on your smart contract
+        const voteCount = await contract.methods.getVoteCount(_option).call();
+        console.log(`Vote count for option ${_option}: ${voteCount}`);
+      } else {
+        console.error('Invalid contract instance');
+      }
+    } catch (error) {
+      console.error('Error while getting vote count:', error);
+    }
+  };
 
   return (
     <Container>
@@ -387,20 +419,31 @@ const VotingApp = () => {
             >
               Add Option
             </Button>
-            <Form.Group>
-              <Form.Label>Remove Option:</Form.Label>
-              <Form.Control as="select" onChange={(e) => setSelectedOption(e.target.value)}>
+            <div>
+              <Form.Control as="select" value={selectedRmOption !== null ? selectedRmOption : ""} onChange={(e) => setSelectedRmOption(e.target.value)}>
                 <option value="" disabled>Select an option</option>
                 {options.map((option, index) => (
                   <option key={index} value={index}>{option}</option>
                 ))}
               </Form.Control>
-            </Form.Group>
-            <Button variant="primary" onClick={() => removeOption()}>Remove</Button>
-
+              <button onClick={handleRemoveOption} disabled={!selectedRmOption}>
+                Remove Selected Option
+              </button>
+            </div>
+            <div>
+              <Form.Control as="select" value={voteCount !== null ? voteCount : ""} onChange={(e) => setVoteCount(e.target.value)}>
+                <option value="" disabled>Select an option</option>
+                {options.map((option, index) => (
+                  <option key={index} value={index}>{option}</option>
+                ))}
+              </Form.Control>
+              <button onClick={() => getVoteCount(voteCount)}>
+                Get Vote Count
+              </button>
+            </div>
           </Form>
           {hasVoted && (
-            <p>You have voted for option: {votedOption}</p>
+            <p>You have voted for option: {votedOption.toString()}</p>
           )}
           <div>
             <p>You are : {accounts}</p>
