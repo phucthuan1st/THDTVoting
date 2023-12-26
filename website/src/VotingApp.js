@@ -4,10 +4,253 @@ import { Button, Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
 import Web3 from 'web3';
 
 // Smart contract ABI
-const contractABI = [...];
+const contractABI = [
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_option",
+        "type": "uint256"
+      }
+    ],
+    "name": "addOption",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "option",
+        "type": "uint256"
+      }
+    ],
+    "name": "OptionAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "option",
+        "type": "uint256"
+      }
+    ],
+    "name": "OptionRemoved",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_option",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeOption",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_option",
+        "type": "uint256"
+      }
+    ],
+    "name": "vote",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "voter",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "option",
+        "type": "uint256"
+      }
+    ],
+    "name": "Voted",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "getNumberOfOptions",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_option",
+        "type": "uint256"
+      }
+    ],
+    "name": "getVoteCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_voter",
+        "type": "address"
+      }
+    ],
+    "name": "getVotedOption",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "listOptions",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_option",
+        "type": "uint256"
+      }
+    ],
+    "name": "optionExists",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "options",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "voteCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "voters",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "hasVoted",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "votedOption",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+];
 
 // Smart contract address
-const contractAddress = '0x123...';
+const contractAddress = '0x3EDc93303940Fd7Efe8F84D343af6cA1cA39D87B';
 
 const VotingApp = () => {
   const [web3, setWeb3] = useState(null);
@@ -17,6 +260,7 @@ const VotingApp = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [hasVoted, setHasVoted] = useState(false);
   const [votedOption, setVotedOption] = useState(null);
+  const [addOption, setAddOption] = useState("");
 
   useEffect(() => {
     // Initialize Web3
@@ -36,6 +280,7 @@ const VotingApp = () => {
         setWeb3(_web3);
         const _accounts = await _web3.eth.getAccounts();
         setAccounts(_accounts);
+
       } else {
         console.error('No Ethereum provider detected');
       }
@@ -55,7 +300,9 @@ const VotingApp = () => {
       const _options = [];
       for (let i = 0; i < numberOfOptions; i++) {
         const option = await _contract.methods.options(i).call();
-        _options.push(option);
+        // them toString() o day la xong.
+        _options.push(option.toString());
+        console.log(option);
       }
       setOptions(_options);
     };
@@ -67,12 +314,38 @@ const VotingApp = () => {
 
   const handleVote = async () => {
     // Cast vote for the selected option
-    await contract.methods.vote(selectedOption).send({ from: accounts[0] });
+    await contract.methods.vote(selectedOption).send({ from: accounts[0], type: '0x0' });
     // Update votedOption and hasVoted state
     const _votedOption = await contract.methods.getVotedOption(accounts[0]).call();
     setVotedOption(_votedOption);
     setHasVoted(true);
   };
+
+  const handleAdd = async () => {
+    try {
+      // Call the addOption function on your smart contract
+      await contract.methods.addOption(addOption).send({ from: accounts[0], type: '0x0' });
+      console.log('Option added successfully!');
+      // Update the options state with the new option
+      setOptions(prevOptions => [...prevOptions, addOption]);
+      // Clear the addOption state
+      setAddOption('');
+    } catch (error) {
+      console.error('Error adding option:', error);
+    }
+  };
+
+  const removeOption = async (optionToRemove) => {
+    try {
+      const accounts = await web3.eth.getAccounts();
+      await contract.methods.removeOption(optionToRemove).send({ from: accounts[0], type: "0x0" });
+      console.log(`Option ${optionToRemove} removed successfully`);
+    } catch (error) {
+      console.error('Error while removing option:', error);
+    }
+  };
+
+
 
   return (
     <Container>
@@ -98,10 +371,40 @@ const VotingApp = () => {
               </Form.Control>
             </Form.Group>
             <Button variant="primary" onClick={() => handleVote()} disabled={hasVoted || !selectedOption}>Vote</Button>
+            <Form.Group>
+              <Form.Label>Add New Option:</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter new option"
+                value={addOption}
+                onChange={(e) => setAddOption(e.target.value)}
+              />
+            </Form.Group>
+            <Button
+              variant="primary"
+              onClick={() => handleAdd()}
+              disabled={hasVoted || addOption.trim() === ''}
+            >
+              Add Option
+            </Button>
+            <Form.Group>
+              <Form.Label>Remove Option:</Form.Label>
+              <Form.Control as="select" onChange={(e) => setSelectedOption(e.target.value)}>
+                <option value="" disabled>Select an option</option>
+                {options.map((option, index) => (
+                  <option key={index} value={index}>{option}</option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+            <Button variant="primary" onClick={() => removeOption()}>Remove</Button>
+
           </Form>
           {hasVoted && (
             <p>You have voted for option: {votedOption}</p>
           )}
+          <div>
+            <p>You are : {accounts}</p>
+          </div>
         </Col>
       </Row>
     </Container>
