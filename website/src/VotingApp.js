@@ -414,6 +414,22 @@ const VotingApp = () => {
               </Form.Control>
             </Form.Group>
             <Button variant="primary" onClick={() => handleVote()} disabled={hasVoted || !selectedOption}>Vote</Button>
+            <Form.Group>
+              <Form.Label>Add New Option:</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter new option"
+                value={addOption}
+                onChange={(e) => setAddOption(e.target.value)}
+              />
+            </Form.Group>
+            <Button
+              variant="primary"
+              onClick={() => handleAdd()}
+              disabled={hasVoted || addOption.trim() === ''}
+            >
+              Add Option
+            </Button>
           </Form>
           <div>
             {hasVoted && (
