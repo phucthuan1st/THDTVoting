@@ -1,2 +1,4 @@
 ./node_modules/*
 ./website/node_modules/*
+./contracts/*.env
+./logs/*

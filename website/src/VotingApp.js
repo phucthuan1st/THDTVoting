@@ -7,6 +7,7 @@ import './VotingApp.css';
 // Smart contract ABI
 const contractABI = [
   // Bao hieu da duoc add
+
   {
     "anonymous": false,
     "inputs": [
@@ -213,7 +214,7 @@ const contractABI = [
 ];
 
 // Smart contract address
-const contractAddress = '0xd6808A6CC91f3254Fe2Ec303AD2CAfa1FC4A6E4B';
+const contractAddress = '0xa4B3f8973f23Fc2973C238541c6Bc55a0c8cc39e';
 
 const VotingApp = () => {
   const [web3, setWeb3] = useState(null);
@@ -229,14 +230,15 @@ const VotingApp = () => {
     // Initialize Web3
     const initWeb3 = async () => {
       if (window.ethereum) {
-        const _web3 = new Web3(window.ethereum);
-        try {
-          await window.ethereum.enable();
-          setWeb3(_web3);
-          const _accounts = await _web3.eth.getAccounts();
-          setAccounts(_accounts);
-        } catch (error) {
-          console.error('User denied account access');
+        if (window.ethereum) {
+          try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            setAccounts(accounts);
+          } catch (error) {
+            if (error.code === 4001) {
+              console.error('User denied account access');
+            }
+          }
         }
       } else if (window.web3) {
         const _web3 = new Web3(window.web3.currentProvider);
@@ -265,7 +267,7 @@ const VotingApp = () => {
       const _options = [];
       for (let i = 0; i < numberOfOptions; i++) {
         const option = await _contract.methods.options(i).call();
-        _options.push(option);
+        _options.push(option.toString());
       }
       setOptions(_options);
       } catch (error) {
@@ -279,8 +281,30 @@ const VotingApp = () => {
   }, [web3]);
 
   const handleVote = async () => {
-    await contract.methods.vote(selectedOption).send({ from: accounts[0] });
-    const _votedOption = await contract.methods.getVotedOption(accounts[0].call());
+
+    // Ensure that there is at least one account available
+    if (accounts.length === 0) {
+      console.error('No Ethereum accounts available.');
+      return;
+    }
+
+    // Prompt the user to choose an account
+    const selectedAccount = await window.ethereum.request({
+      method: 'eth_requestAccounts',
+    });
+
+    // Ensure that the user selected an account
+    if (!selectedAccount || selectedAccount.length === 0) {
+      console.error('User did not choose an Ethereum account.');
+      return;
+    }
+
+    // Cast vote for the selected option
+    await contract.methods.vote(selectedOption).send({ from: selectedAccount[0] });
+
+    // Update votedOption and hasVoted state
+    const _votedOption = await contract.methods.getVotedOption(selectedAccount[0]).call();
+
     setVotedOption(_votedOption);
     setHasVoted(true);
   };
@@ -313,18 +337,18 @@ const VotingApp = () => {
 
 
   return (
-    <Container>
-      <Row>
-        <Col>
-          <h2>Voting Options</h2>
+    <Container fluid className="my-4">
+      <Row className="justify-content-center">
+        <Col md={6}>
+          <h2 className="text-center mb-4">Voting Options</h2>
           <ListGroup>
             {options.map((option, index) => (
               <ListGroup.Item key={index}>{option}</ListGroup.Item>
             ))}
           </ListGroup>
         </Col>
-        <Col>
-          <h2>Vote</h2>
+        <Col md={6}>
+          <h2 className="text-center mb-4">Vote</h2>
           <Form>
             <Form.Group>
               <Form.Label>Select Option:</Form.Label>
@@ -354,7 +378,7 @@ const VotingApp = () => {
             </Button>
           </Form>
           {hasVoted && (
-            <p>You have voted for option: {votedOption}</p>
+            <p className="mt-3 text-center">You have voted for option: {votedOption}</p>
           )}
         </Col>
       </Row>
