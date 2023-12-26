@@ -250,7 +250,7 @@ const contractABI = [
 ];
 
 // Smart contract address
-const contractAddress = '0x3EDc93303940Fd7Efe8F84D343af6cA1cA39D87B';
+const contractAddress = '0xc0EEED43772Cc5C60f477980D255025D188b57D9';
 
 const VotingApp = () => {
   const [web3, setWeb3] = useState(null);
@@ -263,6 +263,7 @@ const VotingApp = () => {
   const [addOption, setAddOption] = useState("");
   const [selectedRmOption, setSelectedRmOption] = useState(null);
   const [voteCount, setVoteCount] = useState(null);
+
 
 
 
@@ -379,6 +380,16 @@ const VotingApp = () => {
     }
   };
 
+  const getVotedOption = async (accounts) => {
+    try {
+      const result = await contract.methods.getVotedOption(accounts).call();
+      setVotedOption(result);
+      console.log('Voted Option:', result);
+    } catch (error) {
+      console.error('Error calling getVotedOption:', error);
+    }
+  }
+
   return (
     <Container>
       <Row>
@@ -396,57 +407,27 @@ const VotingApp = () => {
             <Form.Group>
               <Form.Label>Select Option:</Form.Label>
               <Form.Control as="select" onChange={(e) => setSelectedOption(e.target.value)}>
-                <option value="" disabled>Select an option</option>
                 {options.map((option, index) => (
-                  <option key={index} value={index}>{option}</option>
+                  <option key={index} value={option}>{option}</option>
                 ))}
+                <option value="" disabled>Select an option</option>
               </Form.Control>
             </Form.Group>
             <Button variant="primary" onClick={() => handleVote()} disabled={hasVoted || !selectedOption}>Vote</Button>
-            <Form.Group>
-              <Form.Label>Add New Option:</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter new option"
-                value={addOption}
-                onChange={(e) => setAddOption(e.target.value)}
-              />
-            </Form.Group>
-            <Button
-              variant="primary"
-              onClick={() => handleAdd()}
-              disabled={hasVoted || addOption.trim() === ''}
-            >
-              Add Option
-            </Button>
-            <div>
-              <Form.Control as="select" value={selectedRmOption !== null ? selectedRmOption : ""} onChange={(e) => setSelectedRmOption(e.target.value)}>
-                <option value="" disabled>Select an option</option>
-                {options.map((option, index) => (
-                  <option key={index} value={index}>{option}</option>
-                ))}
-              </Form.Control>
-              <button onClick={handleRemoveOption} disabled={!selectedRmOption}>
-                Remove Selected Option
-              </button>
-            </div>
-            <div>
-              <Form.Control as="select" value={voteCount !== null ? voteCount : ""} onChange={(e) => setVoteCount(e.target.value)}>
-                <option value="" disabled>Select an option</option>
-                {options.map((option, index) => (
-                  <option key={index} value={index}>{option}</option>
-                ))}
-              </Form.Control>
-              <button onClick={() => getVoteCount(voteCount)}>
-                Get Vote Count
-              </button>
-            </div>
           </Form>
-          {hasVoted && (
-            <p>You have voted for option: {votedOption.toString()}</p>
-          )}
+          <div>
+            {hasVoted && (
+              <p>You have voted for option: {votedOption.toString()}</p>
+            )}
+          </div>
           <div>
             <p>You are : {accounts}</p>
+            <p>Connected Account: {accounts}</p>
+            <p>Phai ngat ket noi het cac tai khoan hien tai, chi de lai tai khoan can xem tren metamask</p>
+            <button onClick={() => getVotedOption(accounts.toString())}>Get Voted Option</button>
+            {votedOption !== null && (
+              <p>Voted Option: {votedOption.toString()}</p>
+            )}
           </div>
         </Col>
       </Row>
