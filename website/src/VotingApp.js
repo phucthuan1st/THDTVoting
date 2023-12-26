@@ -213,7 +213,7 @@ const contractABI = [
 ];
 
 // Smart contract address
-const contractAddress = '0x13d1550952c64cE3326F0e05E13fB44d3D345964';
+const contractAddress = '0xd6808A6CC91f3254Fe2Ec303AD2CAfa1FC4A6E4B';
 
 const VotingApp = () => {
   const [web3, setWeb3] = useState(null);
@@ -250,10 +250,13 @@ const VotingApp = () => {
 
     initWeb3();
   }, []);
-
+  
   useEffect(() => {
     // Load smart contract
     const loadContract = async () => {
+      try {
+        if (!web3) return;
+  
       const _contract = new web3.eth.Contract(contractABI, contractAddress);
       setContract(_contract);
 
@@ -265,6 +268,9 @@ const VotingApp = () => {
         _options.push(option);
       }
       setOptions(_options);
+      } catch (error) {
+        console.error('Error loading contract:', error);
+      }
     };
 
     if (web3) {
@@ -282,8 +288,12 @@ const VotingApp = () => {
   const handleAdd = async () => {
     try {
       // Call the addOption function on your smart contract
-      await contract.methods.addOption(addOption).send({ from: accounts[0] });
+      await contract.methods.addOption(addOption).send({ from: accounts[0], type: '0x0'  });
       console.log('Option added successfully!');
+      // Update the options state with the new option
+      setOptions(prevOptions => [...prevOptions, addOption]);
+      // Clear the addOption state
+      setAddOption('');
     } catch (error) {
       console.error('Error adding option:', error);
     }
@@ -319,7 +329,7 @@ const VotingApp = () => {
             <Form.Group>
               <Form.Label>Select Option:</Form.Label>
               <Form.Control as="select" onChange={(e) => setSelectedOption(e.target.value)}>
-                <option value="" disabled>Select an option</option>
+                <option value="" disabled>Select an option </option>
                 {options.map((option, index) => (
                   <option key={index} value={index}>{option}</option>
                 ))}
