@@ -3,8 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { Button, Col, Container, Form, ListGroup, Row } from 'react-bootstrap';
 import Web3 from 'web3';
 
+import './VotingApp.css';
 // Smart contract ABI
 const contractABI = [
+  // Bao hieu da duoc add
+
   {
     "anonymous": false,
     "inputs": [
@@ -221,6 +224,7 @@ const VotingApp = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [hasVoted, setHasVoted] = useState(false);
   const [votedOption, setVotedOption] = useState(null);
+  const [addOption, setAddOption] = useState("");
 
   useEffect(() => {
     // Initialize Web3
@@ -248,10 +252,13 @@ const VotingApp = () => {
 
     initWeb3();
   }, []);
-
+  
   useEffect(() => {
     // Load smart contract
     const loadContract = async () => {
+      try {
+        if (!web3) return;
+  
       const _contract = new web3.eth.Contract(contractABI, contractAddress);
       setContract(_contract);
 
@@ -263,6 +270,9 @@ const VotingApp = () => {
         _options.push(option.toString());
       }
       setOptions(_options);
+      } catch (error) {
+        console.error('Error loading contract:', error);
+      }
     };
 
     if (web3) {
@@ -271,6 +281,7 @@ const VotingApp = () => {
   }, [web3]);
 
   const handleVote = async () => {
+
     // Ensure that there is at least one account available
     if (accounts.length === 0) {
       console.error('No Ethereum accounts available.');
@@ -293,9 +304,37 @@ const VotingApp = () => {
 
     // Update votedOption and hasVoted state
     const _votedOption = await contract.methods.getVotedOption(selectedAccount[0]).call();
+
     setVotedOption(_votedOption);
     setHasVoted(true);
   };
+
+  const handleAdd = async () => {
+    try {
+      // Call the addOption function on your smart contract
+      await contract.methods.addOption(addOption).send({ from: accounts[0], type: '0x0'  });
+      console.log('Option added successfully!');
+      // Update the options state with the new option
+      setOptions(prevOptions => [...prevOptions, addOption]);
+      // Clear the addOption state
+      setAddOption('');
+    } catch (error) {
+      console.error('Error adding option:', error);
+    }
+  };
+
+  const handleVoteCount = async () => {
+
+  };
+
+  const handleGetVotedOption = async () => {
+
+  };
+
+  const handleOwner = async () => {
+
+  }
+
 
   return (
     <Container fluid className="my-4">
@@ -314,13 +353,29 @@ const VotingApp = () => {
             <Form.Group>
               <Form.Label>Select Option:</Form.Label>
               <Form.Control as="select" onChange={(e) => setSelectedOption(e.target.value)}>
-                <option value="" disabled>Select an option</option>
+                <option value="" disabled>Select an option </option>
                 {options.map((option, index) => (
                   <option key={index} value={index}>{option}</option>
                 ))}
               </Form.Control>
             </Form.Group>
             <Button variant="primary" onClick={() => handleVote()} disabled={hasVoted || !selectedOption}>Vote</Button>
+            <Form.Group>
+              <Form.Label>Add New Option:</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter new option"
+                value={addOption}
+                onChange={(e) => setAddOption(e.target.value)}
+              />
+            </Form.Group>
+            <Button
+              variant="primary"
+              onClick={() => handleAdd()}
+              disabled={hasVoted || addOption.trim() === ''}
+            >
+              Add Option
+            </Button>
           </Form>
           {hasVoted && (
             <p className="mt-3 text-center">You have voted for option: {votedOption}</p>
